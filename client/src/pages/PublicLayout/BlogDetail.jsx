@@ -6,11 +6,14 @@ import DOMpurify from 'dompurify'
 import { Bookmark, Heart } from 'lucide-react'
 import { toast } from 'react-toastify'
 import RelatedPosts from '~/components/RelatedPosts'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
 const BlogDetail = () => {
   const [post, setPost] = useState({})
   const [relatedPosts, setRelatedPosts] = useState([])
   const { postId } = useParams()
+  const currentUser = useSelector(selectCurrentUser)
 
 
   useEffect(() => {
@@ -83,29 +86,32 @@ const BlogDetail = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                {/* Like button */}
-                <button
-                  onClick={async () => await toggleLike(post._id, 'post')}
-                  type="button"
-                  className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm hover:scale-105 transition transform"
-                  aria-label="Like article"
-                >
-                  <Heart className={post.isLiked && 'fill-red-600'}/>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{post.likesCount}</span>
-                </button>
+              {
+                currentUser && <div className="flex items-center gap-3">
+                  {/* Like button */}
+                  <button
+                    onClick={async () => await toggleLike(post._id, 'post')}
+                    type="button"
+                    className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm hover:scale-105 transition transform"
+                    aria-label="Like article"
+                  >
+                    <Heart className={post.isLiked && 'fill-red-600'}/>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{post.likesCount}</span>
+                  </button>
 
-                {/* Bookmark button */}
-                <button
-                  type="button"
-                  className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm hover:scale-105 transition transform"
-                  aria-label="Bookmark article"
-                  onClick={handleBookmark}
-                >
-                  <Bookmark className={post.isBookmarked && 'fill-blue'}/>
-                  <span className="text-sm text-gray-700 dark:text-gray-200">Save</span>
-                </button>
-              </div>
+                  {/* Bookmark button */}
+                  <button
+                    type="button"
+                    className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-sm hover:scale-105 transition transform"
+                    aria-label="Bookmark article"
+                    onClick={handleBookmark}
+                  >
+                    <Bookmark className={post.isBookmarked && 'fill-blue'}/>
+                    <span className="text-sm text-gray-700 dark:text-gray-200">Save</span>
+                  </button>
+                </div>
+              }
+
             </div>
 
             {/* Featured image */}
