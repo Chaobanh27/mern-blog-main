@@ -32,6 +32,7 @@ const startServer = () => {
 
   app.use(express.json())
 
+  app.get('/', (req, res)=> res.send('Server is running'))
   app.use('/v1', API_V1)
 
   app.use(errorHandlingMiddleware)
