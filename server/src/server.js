@@ -44,7 +44,7 @@ const startServer = () => {
   initSocket(server)
 
   if (env.BUILD_MODE === 'production') {
-    server.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, '0.0.0.0', () => {
       logger.info(`Production: Hi ${env.AUTHOR}, Back-end app is running successfully at Port: ${process.env.PORT}`)
     })
   } else {
