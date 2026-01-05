@@ -91,7 +91,6 @@ Router.route('/verify-2fa')
 Router.route('')
   .get(
     authMiddleware.isAuthorized,
-    roleCheckingMiddleware.isValidPermission(['user_read']),
     userController.getAllUsers
   )
 
