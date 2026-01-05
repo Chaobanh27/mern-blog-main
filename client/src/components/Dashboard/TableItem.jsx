@@ -60,22 +60,22 @@ const TableItem = ({ data, setData, sortField, sortOrder, setValue }) => {
           <Tbody>
             {data && data.map((user, i) => {
               return (
-                <Tr key={user._id} className="border-t border-gray-200">
+                <Tr key={user?._id} className="border-t border-gray-200">
                   <Td className="text-center p-3">{i + 1}</Td>
                   <Td className="p-3">
-                    <img src={user.avatar} alt="user avatar" className="w-10 h-10 rounded-full object-cover m-auto" />
+                    <img src={user?.avatar} alt="user avatar" className="w-10 h-10 rounded-full object-cover m-auto" />
                   </Td>
-                  <Td className="p-3">{user.username}</Td>
-                  <Td className="p-3">{user.email}</Td>
-                  <Td className="p-3">{user.role.name}</Td>
-                  <Td className="p-3">{new Date(user.createdAt).toLocaleDateString()}</Td>
+                  <Td className="p-3">{user?.username}</Td>
+                  <Td className="p-3">{user?.email}</Td>
+                  <Td className="p-3">{user?.role?.name}</Td>
+                  <Td className="p-3">{new Date(user?.createdAt).toLocaleDateString()}</Td>
                   <Td className="p-3">
                     <span
                       className={`${
                         user.isActive ? 'text-green-600' : 'text-orange-600'
                       } font-semibold`}
                     >
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user?.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </Td>
                   <Td>
