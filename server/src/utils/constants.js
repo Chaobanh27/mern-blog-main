@@ -2,7 +2,8 @@ import { env } from '~/config/environment'
 
 //nhung domain duoc phep truy cap toi tai nguyen server
 export const WHITELIST_DOMAINS = [
-  'http://localhost:5173'
+  'http://localhost:5173',
+  'https://mern-blog-main-client.vercel.app/'
 ]
 
 export const WEBSITE_DOMAIN = (env.BUILD_MODE === 'production') ? env.WEBSITE_DOMAIN_PRODUCTION : env.WEBSITE_DOMAIN_DEVELOPMENT
