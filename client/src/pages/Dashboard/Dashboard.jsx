@@ -18,9 +18,6 @@ const Dashboard = () => {
     fecthData()
   }, [])
 
-  console.log(data);
-
-
   return (
     <div className="p-4 h-screen">
       <section className="grid md:grid-cols-4 sm:grid-cols-2 gap-4">

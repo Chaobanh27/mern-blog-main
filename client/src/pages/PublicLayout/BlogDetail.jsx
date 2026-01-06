@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { createNewBookmarkAPI, getPostAPI, getRelatedPostsAPI, toggleLikeAPI } from '../../apis'
-// import CommentSection from '~/components/CommentSection'
-import CommentSection from '../../components/CommentSection'
+import { createNewBookmarkAPI, getPostAPI, getRelatedPostsAPI, toggleLikeAPI } from '~/apis'
+import CommentSection from '~/components/CommentSection'
 import DOMpurify from 'dompurify'
 import { Bookmark, Heart } from 'lucide-react'
 import { toast } from 'react-toastify'
-// import RelatedPosts from '~/components/RelatedPosts'
-import RelatedPosts from '../../components/RelatedPosts'
+import RelatedPosts from '~/components/RelatedPosts'
 import { useSelector } from 'react-redux'
-// import { selectCurrentUser } from '~/redux/user/userSlice'
-import { selectCurrentUser } from '../../redux/user/userSlice'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
 const BlogDetail = () => {
   const [post, setPost] = useState({})

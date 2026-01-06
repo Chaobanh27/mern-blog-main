@@ -1,9 +1,9 @@
 
-import Blogs from '../../components/Blogs'
-import Header from '../../components/Header'
-import NewsLetter from '../../components/NewsLetter'
-function Home() {
+import Blogs from '~/components/Blogs'
+import Header from '~/components/Header'
+import NewsLetter from '~/components/NewsLetter'
 
+const Home = () => {
 
   return (
     <>
