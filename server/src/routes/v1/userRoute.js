@@ -3,7 +3,7 @@ import { userValidation } from '~/validations/userValidation'
 import { userController } from '~/controllers/userController'
 import { authMiddleware } from '~/middlewares/authMiddleware'
 import { multerUploadMiddleware } from '~/middlewares/multerUploadMiddleware'
-import { roleCheckingMiddleware } from '~/middlewares/roleCheckingMiddleware'
+// import { roleCheckingMiddleware } from '~/middlewares/roleCheckingMiddleware'
 
 const Router = express.Router()
 
@@ -50,7 +50,7 @@ Router.route('/login')
  *         description: Thành công
  */
 Router.route('/logout')
-  .delete(authMiddleware.isAuthorized, userController.logout)
+  .delete(userController.logout)
 
 /**
  * @swagger

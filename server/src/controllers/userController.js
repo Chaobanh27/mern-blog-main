@@ -53,6 +53,11 @@ const login = async (req, res, next) => {
         secure: true,
         sameSite: 'none'
       })
+      res.cookie('sessionId', result.sessionId, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      })
       res.status(StatusCodes.OK).json(result)
 
     }
@@ -70,7 +75,12 @@ const login = async (req, res, next) => {
       sameSite: 'none',
       maxAge: ms('14 days')
     })
-
+    res.cookie('sessionId', result.sessionId, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('14 days')
+    })
     res.status(StatusCodes.OK).json(result)
   } catch (error) { next(error) }
 }
@@ -110,12 +120,12 @@ const getAllRoles = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const userId = req.jwtDecoded._id
+    const sessiontId = req.cookies?.sessionId
     const reqHeader = req.headers['user-agent']
-    await userService.logout(userId, reqHeader)
+    await userService.logout(sessiontId, reqHeader)
     res.clearCookie('accessToken')
     res.clearCookie('refreshToken')
-
+    res.clearCookie('sessionId')
     res.status(StatusCodes.OK).json({ loggedOut: true })
   } catch (error) { next(error) }
 }

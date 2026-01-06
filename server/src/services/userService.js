@@ -59,13 +59,10 @@ const createNew = async (reqBody) => {
       verifyToken: uuidv4()
     }
 
-    const user = new userModel(newUser)
-    const createdUser = await user.save()
-
-    const to = createdUser.email
-    const toName = createdUser.username
-    const subject = 'hello Chaobanh'
-    const verificationLink = `${WEBSITE_DOMAIN}/account/verification?email=${createdUser.email}&token=${createdUser.verifyToken}`
+    const to = email
+    const toName = nameFromEmail
+    const subject = `hello ${nameFromEmail}`
+    const verificationLink = `${WEBSITE_DOMAIN}/account/verification?email=${email}&token=${newUser.verifyToken}`
 
     const templateId = MAILER_SEND_TEMPLATE_IDS.REGISER_ACCOUNT
 
@@ -87,6 +84,9 @@ const createNew = async (reqBody) => {
       templateId,
       personalizationData
     })
+
+    const user = new userModel(newUser)
+    const createdUser = await user.save()
 
     return createdUser
   } catch (error) {
@@ -150,12 +150,14 @@ const login = async (reqBody, reqHeader) => {
     )
 
     let resUser = pickUser(existUser)
+    let sessionId
 
 
     let currentUserSession = await userSessionModel.findOne({
       userId : existUser._id,
       deviceId: reqHeader
     })
+
 
     if (!currentUserSession) {
       currentUserSession = await userSessionModel.create({
@@ -164,6 +166,7 @@ const login = async (reqBody, reqHeader) => {
         is2FAVerified: false,
         lastLogin: new Date()
       })
+      sessionId = currentUserSession._doc._id
     }
 
     resUser['is2FAVerified'] = currentUserSession.is2FAVerified
@@ -172,6 +175,7 @@ const login = async (reqBody, reqHeader) => {
     return {
       accessToken,
       refreshToken,
+      sessionId: sessionId,
       ...resUser
     }
   } catch (error) {
@@ -312,15 +316,16 @@ const getAllRoles = async (userId) => {
 
 }
 
-const logout = async (userId, reqHeader) => {
+const logout = async (sessionId, reqHeader) => {
   try {
-    const existUser = await userModel.findOne({ _id: userId })
-    if (!existUser) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+    if (!sessionId) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'session does not exist !')
     }
-
-    await userSessionModel.deleteMany({
-      userId : existUser._id,
+    if (!reqHeader) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'No device info!')
+    }
+    await userSessionModel.deleteOne({
+      _id: sessionId,
       deviceId: reqHeader
     })
   } catch (error) {

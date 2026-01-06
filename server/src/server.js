@@ -43,7 +43,6 @@ const startServer = () => {
 
   initSocket(server)
   const PORT = process.env.PORT || 3000
-  console.log(PORT);
   if (env.BUILD_MODE === 'production') {
     server.listen(PORT, '0.0.0.0', () => {
       logger.info(`Production: Hi ${env.AUTHOR}, Back-end app is running successfully at Port: ${process.env.PORT}`)
