@@ -8,7 +8,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
         <script>
       //Đặt theme trực tiếp vào <html> trước khi React chạy để khi browser render lần đầu, nó đã biết là light hay dark → không bị flash nữa.
         const theme = localStorage.getItem("theme");
@@ -19,5 +18,6 @@
           document.documentElement.classList.remove("dark");
         }
     </script>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
