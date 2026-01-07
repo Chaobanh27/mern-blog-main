@@ -2,8 +2,10 @@
 import { StatusCodes } from 'http-status-codes'
 import commentModel from '~/models/commentModel'
 import likeModel from '~/models/likeModel'
+import notificationModel from '~/models/notificationModel'
 import postModel from '~/models/postModel'
 import userModel from '~/models/userModel'
+import { getIO } from '~/sockets'
 import ApiError from '~/utils/ApiError'
 import { toggleActiveById } from '~/utils/genericHelper'
 
@@ -11,14 +13,37 @@ import { toggleActiveById } from '~/utils/genericHelper'
 const createNew = async (postId, content, userId) => {
   try {
     const existUser = await userModel.findOne({ _id: userId })
+    const existPost = await postModel.findOne({ _id: postId })
+
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
     if (!existUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
+    if (!existPost) throw new ApiError(StatusCodes.NOT_FOUND, 'Post not found!')
+    if (!existPost.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Post is not active!')
 
     const newComment = await commentModel.create({
       postId: postId,
       userId: userId,
       content: content
     })
+
+    if (existPost?.author?.toString() !== userId) {
+      //tạo notification và lưu vào DB
+      await notificationModel.create({
+        userId: existPost?.author,
+        senderId: userId,
+        type: 'comment_post',
+        postId: postId
+      })
+
+      //xử lý real time thông báo đến chủ bài post
+      getIO().to(existPost?.author?.toString()).emit('notification', {
+        type: 'comment_post',
+        postId: postId,
+        senderId: existUser,
+        message: 'has commented on your post',
+        createdAt: Date.now()
+      })
+    }
 
     const result = await commentModel.findById(newComment._doc._id).populate('userId')
 
@@ -59,23 +84,46 @@ const update = async (commentId, postId, userId, content) => {
 }
 
 const createReply = async (parentCommentId, replyContent, userId) => {
-  // console.log('parentCommentId', parentCommentId)
-  // console.log('replyContent', replyContent)
-  // console.log('userId', userId)
   try {
     const existUser = await userModel.findOne({ _id: userId })
+    const existParentComment = await commentModel.findOne({ _id: parentCommentId })
+
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
     if (!existUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
+    if (!existParentComment) throw new ApiError(StatusCodes.NOT_FOUND, 'Comment not found!')
+    if (!existParentComment.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Comment is not active!')
 
-    const parentComment = await commentModel.findById(parentCommentId)
-    if (!parentComment) throw new ApiError(StatusCodes.NOT_FOUND, 'Comment not found!')
+    const existPost = await postModel.findOne({ _id: existParentComment.postId })
+    if (!existPost) throw new ApiError(StatusCodes.NOT_FOUND, 'Post not found!')
+    if (!existPost.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Post is not active!')
 
     const newReplyComment = await commentModel.create({
-      postId: parentComment.postId,
+      postId: existParentComment.postId,
       userId: userId,
       content: replyContent,
       parentCommentId: parentCommentId
     })
+
+    if (existParentComment?.userId?.toString() !== userId) {
+      //tạo notification và lưu vào DB
+      await notificationModel.create({
+        userId: existPost?.author,
+        senderId: userId,
+        type: 'reply_comment',
+        commentId: parentCommentId,
+        postId: existParentComment.postId
+      })
+
+      //xử lý real time thông báo đến chủ bài post
+      getIO().to(existParentComment?.userId?.toString()).emit('notification', {
+        type: 'reply_comment',
+        commentId: parentCommentId,
+        postId: existParentComment.postId,
+        senderId: existUser,
+        message: 'has replied to your comment',
+        createdAt: Date.now()
+      })
+    }
 
     const result = await commentModel.findById(newReplyComment._doc._id).populate('userId')
 

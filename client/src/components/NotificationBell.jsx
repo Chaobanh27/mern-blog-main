@@ -82,12 +82,12 @@ const NotificationBell = ({ notifications, unreadCount, onMarkAllRead }) => {
                     <p className="text-sm text-gray-800 dark:text-gray-200">
                       <span className="font-semibold">{n.senderId?.username}</span>{' '}
                       { n.type === 'like_comment'
-                        ? 'đã thích bình luận của bạn'
+                        ? 'has liked your comment'
                         : n.type === 'reply_comment'
-                          ? 'đã trả lời bình luận của bạn'
+                          ? 'has replied to your comment'
                           : n.type === 'comment_post'
-                            ? 'đã bình luận bài viết của bạn'
-                            : 'đã thích bài viết của bạn'}
+                            ? 'has commented on your post'
+                            : 'has liked your post'}
                     </p>
 
                     <span className="text-xs text-gray-500">

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Select from 'react-select'
 import { getBookmarksAPI, getCategoriesAPI, getTagsAPI } from '~/apis'
-import LoadingSpinner from '~/components/LoadingSpinner'
 import PostPreview from '~/components/PostPreview'
 
 const Bookmark = () => {
@@ -129,7 +128,11 @@ const Bookmark = () => {
           <div key={post._id}>
             <PostPreview post={post}/>
           </div>
-        )) : <LoadingSpinner/>}
+        )) :
+          <div className='dark:text-white w-full text-center font-bold uppercase'>
+            <p>no bookmarks found</p>
+          </div>
+        }
       </section>
 
       {/* Pagination */}

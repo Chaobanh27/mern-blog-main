@@ -27,6 +27,7 @@ import AddBlog from '~/pages/Dashboard/Add/AddBlog'
 import AddCategory from '~/pages/Dashboard/Add/AddCategory'
 import AddTag from '~/pages/Dashboard/Add/AddTag'
 import EditBlog from '~/pages/Dashboard/EditBlog'
+import Require2FA from './components/Require2FA'
 
 const ProtectedRoute = ({ user }) => {
   if (!user) return <Navigate to='/login' replace={true} />
@@ -35,6 +36,11 @@ const ProtectedRoute = ({ user }) => {
 
 const App = () => {
   const currentUser = useSelector(selectCurrentUser)
+  if (currentUser) {
+    if (currentUser.require2FA && !currentUser.is2FAVerified) {
+      return <Require2FA user={currentUser}/>
+    }
+  }
 
   return (
     <>

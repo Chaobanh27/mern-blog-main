@@ -75,7 +75,7 @@ const AccountTab = () => {
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 cursor-pointer">
+              <label className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue text-white rounded-md text-sm hover:bg-blue-600 cursor-pointer">
               Change
                 <input type="file" className="hidden" onChange={uploadAvatar} />
               </label>
@@ -158,7 +158,7 @@ const AccountTab = () => {
             <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
               <button
                 type="submit"
-                className="inline-flex items-center justify-center px-5 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
+                className="inline-flex items-center justify-center px-5 py-2 rounded-md bg-blue text-white hover:bg-blue-600 cursor-pointer"
               >
               Save changes
               </button>

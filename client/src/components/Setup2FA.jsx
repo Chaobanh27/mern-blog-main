@@ -103,7 +103,7 @@ const Setup2FA = ({ isOpen, toggleOpen }) => {
             <button
               type="button"
               onClick={handleConfirmSetup2FA}
-              className="min-w-[120px] rounded-md bg-indigo-600 px-5 py-3 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="min-w-[120px] rounded-md bg-blue px-5 py-3 text-sm font-medium text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer"
             >
               Confirm
             </button>

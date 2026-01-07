@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import Require2FA from '~/components/Require2FA'
 import Setup2FA from '~/components/Setup2FA'
 import { selectCurrentUser, updateUserAPI } from '~/redux/user/userSlice'
 import { yupResolver } from '@hookform/resolvers/yup'
 import LoadingSpinner from '~/components/LoadingSpinner'
 import * as yup from 'yup'
 import { toast } from 'react-toastify'
+import { CircleCheckBig } from 'lucide-react'
 
 const schema = yup.object({
   newPassword: yup
@@ -52,7 +52,6 @@ const SecurityTab = () => {
     })
   }
 
-
   return (
     <div className='flex-1 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50 dark:bg-gray-900 min-h-screen'>
 
@@ -60,8 +59,7 @@ const SecurityTab = () => {
         isOpen={openSetup2FA}
         toggleOpen={setOpenSetup2FA}
       />
-      {user.require2FA && !user.is2FAVerified && <Require2FA user={user} />}
-
+      {/* {user.require2FA && !user.is2FAVerified && <Require2FA user={user} />} */}
 
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">
         Cài đặt bảo mật
@@ -118,7 +116,7 @@ const SecurityTab = () => {
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="px-5 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+              className="px-5 py-2 rounded-md bg-blue text-white hover:bg-blue-600 cursor-pointer"
             >
               Cập nhật mật khẩu
             </button>
@@ -140,9 +138,10 @@ const SecurityTab = () => {
         <div className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
           {
             user.is2FAVerified ?
-              <div>
+              <div className='flex gap-2'>
+                <CircleCheckBig className='text-green-400'/>
                 <p className="font-medium text-gray-800 dark:text-gray-100">
-              Đã Bật 2FA
+                  Đã Bật 2FA
                 </p>
               </div> :
               <>
