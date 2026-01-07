@@ -58,8 +58,8 @@ const ListBlogs = () => {
         )
       ])
       setPosts(posts.posts)
-      setCategories(categories)
-      setTags(tags)
+      setCategories(categories.data)
+      setTags(tags.data)
       setTotalPages(posts.totalPages)
     }
 

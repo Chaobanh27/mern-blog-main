@@ -11,7 +11,9 @@ const CommentSection = ({ postId }) => {
   const [comments, setComments] = useState([])
   const [cursor, setCursor] = useState(null)
   const [hasMore, setHasMore] = useState(true)
-  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+  const [showEmoji, setShowEmoji] = useState(false)
+  const [theme, setTheme] = useState('light')
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm()
   const currentUser = useSelector(selectCurrentUser)
   /*
   state này phải nằm trong component cha chứ không được nằm trong component con nếu nằm
@@ -23,6 +25,7 @@ const CommentSection = ({ postId }) => {
     type: null
   })
 
+  const content = watch('content') || ''
   const limit = 5
 
   useEffect(() => {
@@ -36,6 +39,35 @@ const CommentSection = ({ postId }) => {
   }, [postId])
 
 
+  /*
+  mặc dù cách này không hay lắm nhưng do đang tích hợp theme với local storage thôi
+  chứ không dùng redux toolkit và redux persist nên dùng tạm
+  */
+
+  useEffect(() => {
+    const updateTheme = () => {
+      const isDark = document.documentElement.classList.contains('dark')
+      setTheme(isDark ? 'dark' : 'light')
+    }
+
+    updateTheme()
+
+    const observer = new MutationObserver(updateTheme)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    })
+
+    return () => observer.disconnect()
+  })
+
+  // useEffect(() => {
+  //   const handleClickOutside = () => setShowEmoji(false)
+  //   if (showEmoji) document.addEventListener('click', handleClickOutside)
+  //   return () => document.removeEventListener('click', handleClickOutside)
+  // }, [showEmoji])
+
+
   const addComment = async (data) => {
     toast.promise(createNewCommentAPI({ ...data, postId: postId }),
       {
@@ -45,6 +77,7 @@ const CommentSection = ({ postId }) => {
       }).then(res => {
       if (!res.error) {
         reset()
+        setShowEmoji(false)
         setComments( prevState => [res, ...prevState])
       }
     })
@@ -109,6 +142,13 @@ const CommentSection = ({ postId }) => {
     setComments(commentsFilter)
   }
 
+  const handleEmoji = (e) => {
+    setValue('content', content + e.emoji, {
+      shouldValidate: true,
+      shouldDirty: true
+    })
+  }
+
   const loadMore = async () => {
     if (!cursor || !hasMore) return
 
@@ -128,6 +168,11 @@ const CommentSection = ({ postId }) => {
           register={register}
           handleSubmit={handleSubmit}
           onSubmit = {addComment}
+          watch={watch}
+          onEmoji = {handleEmoji}
+          setShowEmoji={setShowEmoji}
+          showEmoji={showEmoji}
+          theme={theme}
           errors={errors}
         /> :
           <div className='p-5 text-center font-bold uppercase'>

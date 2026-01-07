@@ -19,6 +19,7 @@
     "cross-env": "^10.1.0",
     "dayjs": "^1.11.18",
     "dompurify": "^3.3.0",
+    "emoji-picker-react": "^4.16.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.544.0",
     "marked": "^17.0.1",
