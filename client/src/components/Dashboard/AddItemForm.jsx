@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import FormInput from '../FormInput'
 
-const AddItemForm = ({title, label, fieldName = 'name', placeholder, onSubmit, loading = false }) => {
+const AddItemForm = ({ title, label, fieldName = 'name', placeholder, onSubmit, loading = false }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
 
   const submitHandler = async (data) => {
@@ -31,7 +31,7 @@ const AddItemForm = ({title, label, fieldName = 'name', placeholder, onSubmit, l
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-blue-600 px-4 py-2 text-white
+          className="interceptor-loading rounded-md bg-blue-600 px-4 py-2 text-white
                    hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? 'Adding...' : 'Add'}

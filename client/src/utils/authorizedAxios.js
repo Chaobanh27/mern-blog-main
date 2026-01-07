@@ -2,6 +2,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { refreshTokenAPI } from '~/apis'
 import { logoutUserAPI } from '~/redux/user/userSlice'
+import { interceptorLoadingElements } from './formatter'
 
 let axiosReduxStore
 export const injectStore = mainStore => {
@@ -15,6 +16,7 @@ authorizedAxiosInstance.defaults.timeout = 1000 * 60 * 10
 authorizedAxiosInstance.defaults.withCredentials = true
 
 authorizedAxiosInstance.interceptors.request.use( config => {
+  interceptorLoadingElements(true)
   return config
 }, error => {
   return Promise.reject(error)
@@ -22,9 +24,10 @@ authorizedAxiosInstance.interceptors.request.use( config => {
 
 
 authorizedAxiosInstance.interceptors.response.use( response => {
+  interceptorLoadingElements(false)
   return response
 }, error => {
-
+  interceptorLoadingElements(false)
   // if ( error.response?.status === 401) {
   //   axiosReduxStore.dispatch(logoutUserAPI(false))
   // }

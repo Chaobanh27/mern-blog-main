@@ -130,7 +130,7 @@ const AddBlog = () => {
         </div>
 
         <div>
-          <button className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer mt-3'
+          <button className='interceptor-loading bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer mt-3'
             onClick={generateContent}>
             Generate Content With AI
           </button>
@@ -174,7 +174,7 @@ const AddBlog = () => {
         />
 
 
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer mt-3">
+        <button className="interceptor-loading bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer mt-3">
           Submit
         </button>
 

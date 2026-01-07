@@ -108,7 +108,7 @@ const RegisterForm = () => {
               </label>
             </div>
 
-            <button className="w-full bg-blue hover:bg-blue text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer">
+            <button className="interceptor-loading w-full bg-blue hover:bg-blue text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer">
                 Register
             </button>
           </form>

@@ -126,7 +126,7 @@ const LoginForm = () => {
               <Link to='/account/forgot-password' className="text-sm text-blue hover:text-blue">Forgot password?</Link>
             </div>
 
-            <button className="w-full bg-blue text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer">
+            <button className="interceptor-loading w-full bg-blue text-white font-medium py-2.5 rounded-lg transition-colors cursor-pointer">
                 Sign In
             </button>
           </form>

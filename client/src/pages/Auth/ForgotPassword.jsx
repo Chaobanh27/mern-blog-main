@@ -9,7 +9,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!email.trim()) return toast.error('pls enter your email')
+    if (!email.trim()) return toast.error('please enter your email')
     toast.promise(
       forgotPasswordAPI({ email }),
       {
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
 
             <button
               type="submit"
-              className="w-full cursor-pointer py-2.5 bg-blue text-white rounded-lg hover:bg-blue-700 transition font-medium"
+              className="interceptor-loading w-full cursor-pointer py-2.5 bg-blue text-white rounded-lg hover:bg-blue-700 transition font-medium"
             >
               Send Reset Link
             </button>

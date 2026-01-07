@@ -1,9 +1,9 @@
 import { Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const PostPreview = ({ key, post }) => {
+const PostPreview = ({ post }) => {
   return (
-    <Link key={key} to={`/blog-detail/${post._id}`}>
+    <Link to={`/blog-detail/${post._id}`}>
       <div
         className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition cursor-pointer"
       >

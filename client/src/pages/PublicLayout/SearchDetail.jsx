@@ -125,7 +125,9 @@ const SearchDetail = () => {
       {/* Search Results Grid */}
       <section className={currentPosts.length > 0 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' : 'h-40'}>
         {currentPosts.length > 0 ? currentPosts.map((post) => (
-          <PostPreview key={post._id} post={post}/>
+          <div key={post._id}>
+            <PostPreview post={post}/>
+          </div>
         )) : <LoadingSpinner/>}
       </section>
 
