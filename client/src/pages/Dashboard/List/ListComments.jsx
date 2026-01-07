@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import TableItem from '~/components/Dashboard/TableItem'
-import LoadingSpinner from '~/components/LoadingSpinner'
 import { useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import { getCommentsAPI } from '~/apis'
@@ -61,7 +60,10 @@ const ListComments = () => {
           />
         </div>
 
-        {comments.length > 0 ? <TableItem data={comments} sortField={sortField} sortOrder={sortOrder} setData={setComments}/> : <LoadingSpinner/>}
+        {comments.length > 0 ? <TableItem data={comments} sortField={sortField} sortOrder={sortOrder} setData={setComments}/> :
+          <div className='dark:text-white w-full text-center font-bold uppercase'>
+            <p>no results found</p>
+          </div>}
 
         {/* PAGINATION */}
         <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">

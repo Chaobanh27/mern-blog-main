@@ -4,7 +4,6 @@ import { Controller, useForm } from 'react-hook-form'
 import Select from 'react-select'
 import { fetchAllRolesAPI, fetchAllUsersAPI } from '~/apis'
 import TableItem from '~/components/Dashboard/TableItem'
-import LoadingSpinner from '~/components/LoadingSpinner'
 
 const ListUsers = () => {
   const [users, setUsers] = useState([])
@@ -42,7 +41,7 @@ const ListUsers = () => {
           search: debouncedSearch,
           currentPage,
           limit: 10,
-          role: role.value,
+          role: role ? role.value : '',
           status: status.value,
           sortBy: sortField,
           order: sortOrder
@@ -88,10 +87,13 @@ const ListUsers = () => {
                   {...field}
                   placeholder='Roles'
                   closeMenuOnSelect={false}
-                  options={roles.map(r => ({
-                    value: r._id,
-                    label: r.name
-                  }))}
+                  isClearable={true}
+                  options={roles.map(r => (
+                    {
+                      value: r._id,
+                      label: r.name
+                    }
+                  ))}
                   onChange={val => field.onChange(val)}
                 />
               )}
@@ -116,7 +118,11 @@ const ListUsers = () => {
           </div>
         </div>
 
-        {users.length > 0 ? <TableItem data={users} sortField={sortField} sortOrder={sortOrder} setData={setUsers}/> : <LoadingSpinner/>}
+        {users.length > 0 ? <TableItem data={users} sortField={sortField} sortOrder={sortOrder} setData={setUsers}/> :
+          <div className='dark:text-white w-full text-center font-bold uppercase'>
+            <p>no results found</p>
+          </div>
+        }
 
         {/* PAGINATION */}
         <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">

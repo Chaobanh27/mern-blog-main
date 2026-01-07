@@ -25,9 +25,9 @@ authorizedAxiosInstance.interceptors.response.use( response => {
   return response
 }, error => {
 
-  if ( error.response?.status === 401) {
-    axiosReduxStore.dispatch(logoutUserAPI(false))
-  }
+  // if ( error.response?.status === 401) {
+  //   axiosReduxStore.dispatch(logoutUserAPI(false))
+  // }
 
   const originalRequest = error.config
   if (error.response?.status === 410 && !originalRequest._retry) {

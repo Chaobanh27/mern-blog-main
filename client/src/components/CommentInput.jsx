@@ -1,11 +1,8 @@
-import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
-const CommentInput = ({ onSubmit }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+const CommentInput = ({ register, handleSubmit, onSubmit, errors }) => {
   const user = useSelector(selectCurrentUser)
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mb-6 grid grid-cols-1 sm:grid-cols-12 gap-4">
       <div className="sm:col-span-2 flex items-start justify-center">

@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import ModalAlert from './ModalAlert'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 const Comment = ({ comment, commentId, onReply, onLike, onEdit, onDelete, activeInput, setActiveInput }) => {
   const [openModal, setOpenModal] = useState(false)
@@ -11,6 +13,7 @@ const Comment = ({ comment, commentId, onReply, onLike, onEdit, onDelete, active
   const user = useSelector(selectCurrentUser)
   const { replies } = comment
 
+  dayjs.extend(relativeTime)
 
   const openReply = () => {
     setActiveInput({ commentId, type: 'reply' })
@@ -61,7 +64,7 @@ const Comment = ({ comment, commentId, onReply, onLike, onEdit, onDelete, active
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{comment.userId.username}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">2 hours ago</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{dayjs(comment.createdAt).fromNow()}</p>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">·</div>
           </div>
@@ -149,7 +152,7 @@ const Comment = ({ comment, commentId, onReply, onLike, onEdit, onDelete, active
                   <img src={r.userId.avatar} alt="" className='w-12 h-12 rounded-full object-cover' />
                   <div>
                     <div className="text-sm font-medium text-gray-800 dark:text-gray-100">{r.userId.username}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">1 hour ago</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{dayjs(r.createdAt).fromNow()}</div>
                     <div className="mt-1 text-gray-700 dark:text-gray-200">
                       {r.content}
                     </div>

@@ -99,8 +99,7 @@ const SearchDropdown = ({ data = [] }) => {
         onFocus={() => query && setOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder="Search post or author..."
-        className="w-full rounded-md border px-3 py-2 text-sm
-                   focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-md border px-3 py-2 text-sm dark:placeholder:text-white placeholder:text-black "
       />
 
       {open && (

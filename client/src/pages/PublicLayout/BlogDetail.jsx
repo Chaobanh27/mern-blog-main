@@ -161,10 +161,3 @@ const BlogDetail = () => {
 }
 
 export default BlogDetail
-
-// <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto">
-//   {`// Example: memoizing a component
-//   const MemoizedComp = React.memo(function Comp({ count }) {
-//     return <div>{count}</div>;
-//   });`}
-// </pre>

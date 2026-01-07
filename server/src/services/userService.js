@@ -318,14 +318,17 @@ const getAllRoles = async (userId) => {
 
 const logout = async (sessionId, reqHeader) => {
   try {
-    if (!sessionId) {
+    const existUserSession = await userSessionModel.findById({ _id: sessionId })
+    if (!existUserSession) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'session does not exist !')
     }
     if (!reqHeader) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'No device info!')
     }
-    await userSessionModel.deleteOne({
-      _id: sessionId,
+    const userId = existUserSession.userId
+
+    await userSessionModel.deleteMany({
+      userId: userId,
       deviceId: reqHeader
     })
   } catch (error) {

@@ -18,6 +18,7 @@ const AddBlog = () => {
   const [draftId, setDraftId] = useState('')
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
+  const [preview, setPreview] = useState(null)
 
   const { register, handleSubmit, getValues, control, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -43,20 +44,32 @@ const AddBlog = () => {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    if (!image) return
+
+    const objectUrl = URL.createObjectURL(image)
+    setPreview(objectUrl)
+
+    //Giải phóng bộ nhớ RAM xoá URL tạm vừa tạo chỉ chạy khi image thay đổi
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [image])
 
   useEffect(() => setContent(initialValue ?? ''), [initialValue])
 
   const generateContent = async () => {
     const title = getValues('title')
     if (!title) return toast.error('Please enter a title')
-    const res = await generateContentAPI({ prompt: title })
-    if (res) {
-      const AIContent = marked(res)
-      setContent(AIContent)
-    }
-    return
+    toast.promise(generateContentAPI({ prompt: title }), {
+      pending: 'Loading AI content...',
+      success: 'AI content generated successfully',
+      error: 'AI content generated failed'
+    }).then(res => {
+      if (!res.error) {
+        const AIContent = marked(res)
+        setContent(AIContent)
+      }
+    })
   }
-
 
   const onSubmit = async (data) => {
     if (!image) return
@@ -91,21 +104,33 @@ const AddBlog = () => {
 
         <p className='dark:text-white'>Upload thumbnail</p>
         <label htmlFor="image" >
-          {!image ? <Upload /> : <img src={URL.createObjectURL(image)} alt="" className='mt-2 h-16 rounded cursor-pointer' /> }
-          <input onChange={e => setImage(e.target.files[0])} type="file" id='image' hidden />
+          {!preview ? (
+            <Upload />
+          ) : (
+            <img src={preview} className="mt-2 h-16 rounded cursor-pointer" />
+          )}
+          <input
+            type="file"
+            id="image"
+            hidden
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                setImage(e.target.files[0])
+              }
+            }}
+          />
         </label>
 
-        <label className=' dark:text-white' htmlFor='title'><p>Blog title</p></label>
-        <input {...register('title', { required: 'title is required' })} name='title' type="text" placeholder='Type here' required className='w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded dark:text-white'/>
+        <input {...register('title', { required: 'title is required' })} name='title' type="text" placeholder='Enter your title' required className='w-full mt-3 max-w-lg p-2 border border-gray-300 outline-none rounded dark:text-white'/>
         {errors.title && <span className='text-red-600'>{errors.title?.message}</span>}
 
-        <p className=' dark:text-white'>Blog Content</p>
-        <div className='h-screen'>
+        <div className='h-screen mt-3'>
           <DashboardEditor setContent={setContent} initialValue={initialValue} content={content} draftId={draftId}/>
         </div>
 
         <div>
-          <button className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer'
+          <button className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer mt-3'
             onClick={generateContent}>
             Generate Content With AI
           </button>
@@ -118,6 +143,7 @@ const AddBlog = () => {
             <Select
               {...field}
               placeholder='category'
+              className='mt-3'
               closeMenuOnSelect={false}
               options={categories.map(c => ({
                 value: c._id,
@@ -135,6 +161,7 @@ const AddBlog = () => {
             <Select
               {...field}
               placeholder='tags'
+              className='mt-3'
               closeMenuOnSelect={false}
               isMulti
               options={tags.map(c => ({
@@ -147,7 +174,7 @@ const AddBlog = () => {
         />
 
 
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer">
+        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer mt-3">
           Submit
         </button>
 

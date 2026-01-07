@@ -2,9 +2,15 @@ import { useEffect, useState } from 'react'
 import Comment from './Comment'
 import { createNewCommentAPI, createNewReplyAPI, getCommentsByPostAPI, toggleActiveById, toggleLikeAPI, updateCommentAPI } from '~/apis'
 import CommentInput from './CommentInput'
+import { toast } from 'react-toastify'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
 const CommentSection = ({ postId }) => {
   const [comments, setComments] = useState([])
+  const { register, handleSubmit, reset, formState: { errors } } = useForm()
+  const currentUser = useSelector(selectCurrentUser)
   /*
   state này phải nằm trong component cha chứ không được nằm trong component con nếu nằm
   trong component con thì mỗi comment sẽ có activeInput riêng mỗi trạng thái nếu như thế thì
@@ -25,8 +31,17 @@ const CommentSection = ({ postId }) => {
 
 
   const addComment = async (data) => {
-    const res = await createNewCommentAPI({ ...data, postId: postId })
-    setComments( prevState => [...prevState, res])
+    toast.promise(createNewCommentAPI({ ...data, postId: postId }),
+      {
+        pending: 'Adding your comment...',
+        success: 'your comment has been added successfully',
+        error: 'Add comment failed'
+      }).then(res => {
+      if (!res.error) {
+        reset()
+        setComments( prevState => [res, ...prevState])
+      }
+    })
   }
 
   const addReply = async (parentCommentId, replyContent) => {
@@ -91,12 +106,21 @@ const CommentSection = ({ postId }) => {
 
   return (
     <section className="mt-12">
-      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Comments (23)</h3>
+      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Comments {comments.length}</h3>
 
       {/* Comment form */}
-      <CommentInput
-        onSubmit = {addComment}
-      />
+      {
+        currentUser ? <CommentInput
+          register={register}
+          handleSubmit={handleSubmit}
+          onSubmit = {addComment}
+          errors={errors}
+        /> :
+          <div className='p-5 text-center font-bold uppercase'>
+              please log in to comment
+          </div>
+      }
+
 
       {/* Single comment (with replies) */}
       <div className="space-y-6">

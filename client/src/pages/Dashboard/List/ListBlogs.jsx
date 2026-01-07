@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import TableItem from '~/components/Dashboard/TableItem'
-import LoadingSpinner from '~/components/LoadingSpinner'
 import { Controller, useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import Select from 'react-select'
@@ -116,7 +115,11 @@ const ListBlogs = () => {
           </div>
         </div>
 
-        {posts.length > 0 ? <TableItem data={posts} sortField={sortField} sortOrder={sortOrder} setData={setPosts}/> : <LoadingSpinner/>}
+        {posts.length > 0 ? <TableItem data={posts} sortField={sortField} sortOrder={sortOrder} setData={setPosts}/> :
+          <div className='dark:text-white w-full text-center font-bold uppercase'>
+            <p>no results found</p>
+          </div>
+        }
 
         {/* PAGINATION */}
         <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">

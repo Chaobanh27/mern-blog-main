@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import TableItem from '~/components/Dashboard/TableItem'
-import LoadingSpinner from '~/components/LoadingSpinner'
 import { useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import { getTagsAPI } from '~/apis'
@@ -62,7 +61,11 @@ const ListTags = () => {
           <Link to='/dashboard/add-tag' className='rounded p-2 bg-blue text-white'><Plus/></Link>
         </div>
 
-        {tags.length > 0 ? <TableItem data={tags} sortField={sortField} sortOrder={sortOrder} setData={setTags}/> : <LoadingSpinner/>}
+        {tags.length > 0 ? <TableItem data={tags} sortField={sortField} sortOrder={sortOrder} setData={setTags}/> :
+          <div className='dark:text-white w-full text-center font-bold uppercase'>
+            <p>no results found</p>
+          </div>
+        }
 
         {/* PAGINATION */}
         <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">
