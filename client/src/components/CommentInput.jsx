@@ -1,5 +1,5 @@
 import EmojiPicker from 'emoji-picker-react'
-import { Fullscreen } from 'lucide-react'
+import { Fullscreen, SmilePlus } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
@@ -14,9 +14,13 @@ const CommentInput = ({ register, handleSubmit, onSubmit, watch, errors, setShow
         <textarea
           {...register('content', {
             required: 'comment is required',
+            minLength: {
+              value: 1,
+              message: 'Minium 1 characters long'
+            },
             maxLength: {
               value: 200,
-              message: 'Maximum 200 characters'
+              message: 'Maximum 200 characters long'
             }
           })}
           placeholder="write your comment..."
@@ -29,7 +33,7 @@ const CommentInput = ({ register, handleSubmit, onSubmit, watch, errors, setShow
             onClick={() => setShowEmoji((prev) => !prev)}
             className="px-4 py-1 rounded-md bg-blue text-white"
           >
-          Emoji
+            <SmilePlus/>
           </button>
         </div>
 

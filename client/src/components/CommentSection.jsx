@@ -6,6 +6,14 @@ import { toast } from 'react-toastify'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+const schema = yup.object({
+  content: yup
+    .string().trim().min(1, 'Minium 1 characters long').max(200, 'Maximum 200 characters long')
+    .required('comment is required')
+})
 
 const CommentSection = ({ postId }) => {
   const [comments, setComments] = useState([])
@@ -13,7 +21,9 @@ const CommentSection = ({ postId }) => {
   const [hasMore, setHasMore] = useState(true)
   const [showEmoji, setShowEmoji] = useState(false)
   const [theme, setTheme] = useState('light')
-  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm()
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm({
+    resolver: yupResolver(schema)
+  })
   const currentUser = useSelector(selectCurrentUser)
   /*
   state này phải nằm trong component cha chứ không được nằm trong component con nếu nằm

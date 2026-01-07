@@ -133,11 +133,15 @@ const Comment = ({ comment, commentId, onReply, onLike, onEdit, onDelete, active
                   />
                   {errors.replyContent && <span className='text-red-600'>{errors.replyContent?.message}</span>}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <button type="button" className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md">Attach</button>
+                    <div className="flex items-center gap-2 text-sm">
+                      <button type="button" onClick={() => setActiveInput({
+                        commentId: null,
+                        type: null
+                      })}
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md cursor-pointer">Cancel</button>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button type="submit" className="px-4 py-2 rounded-md bg-blue text-white">Post comment</button>
+                      <button type="submit" className="px-4 py-2 rounded-md bg-blue text-white cursor-pointer">Post comment</button>
                     </div>
                   </div>
                 </div>

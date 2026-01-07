@@ -1,15 +1,18 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { logoutUserAPI, selectCurrentUser } from '~/redux/user/userSlice'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 const DashBoardNavbar = ({ collapsed }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const user = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
-    dispatch(logoutUserAPI())
+    dispatch(logoutUserAPI()).then(
+      navigate('/account/login')
+    )
   }
 
   return (

@@ -24,7 +24,7 @@ const PostPreview = ({ post }) => {
             <span>{new Date(post?.createdAt).toLocaleDateString()}</span>
           </div>
 
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue line-clamp-1">
             {post?.title}
           </h2>
 

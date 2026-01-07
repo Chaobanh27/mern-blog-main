@@ -32,7 +32,7 @@ const ModalAlert = ({ open, onClose, onDelete, title, children }) => {
           </button>
           <button
             onClick={onDelete}
-            className="rounded-md px-4 py-2 text-sm bg-blue cursor-pointer  "
+            className="rounded-md px-4 py-2 text-sm bg-blue cursor-pointer text-white "
           >
             Confirm
           </button>

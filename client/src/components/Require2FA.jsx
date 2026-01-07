@@ -69,10 +69,6 @@ export default function Require2FA() {
           </div>
 
           {error && <div className="text-sm text-red-500">{error}</div>}
-
-          <div className="mt-2 text-center">
-              Hello World
-          </div>
         </div>
       </div>
     </div>
