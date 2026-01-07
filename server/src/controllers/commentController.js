@@ -28,7 +28,7 @@ const getCommentsByPost = async (req, res, next) => {
   try {
     const { postId } = req.params
     const userId = req.jwtDecoded?._id
-    const result = await commentService.getCommentsByPost(postId, userId)
+    const result = await commentService.getCommentsByPost(postId, userId, req.query)
     res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)

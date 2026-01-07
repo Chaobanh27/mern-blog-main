@@ -13,7 +13,7 @@ const createNew = async (req, res, next) => {
 
 const getCategories = async (req, res, next) => {
   try {
-    const result = await categoryService.getCategories()
+    const result = await categoryService.getCategories(req.query)
     res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)

@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 import { StatusCodes } from 'http-status-codes'
+import mongoose from 'mongoose'
 import commentModel from '~/models/commentModel'
 import likeModel from '~/models/likeModel'
 import notificationModel from '~/models/notificationModel'
@@ -135,66 +136,201 @@ const createReply = async (parentCommentId, replyContent, userId) => {
   }
 }
 
-const getCommentsByPost = async (postId, userId) => {
-  try {
+// const getCommentsByPost = async (postId, userId) => {
+//   try {
+//     let result = []
+//     const comments = await commentModel.find({ postId: postId, isActive: true })
+//     const parentComments = await commentModel.find({ postId: postId, parentCommentId: null, isActive:true })
+//       .populate({
+//         path: 'userId',
+//         select: 'username avatar email'
+//       })
+//       .sort({ createdAt: -1 })
+//       .lean()
 
-    let result = []
-    const comments = await commentModel.find({ postId: postId, isActive: true })
-    const parentComments = await commentModel.find({ postId: postId, parentCommentId: null, isActive:true })
-      .populate({
-        path: 'userId',
-        select: 'username avatar email'
-      })
-      .sort({ createdAt: -1 })
-      .lean()
 
+//     const replies = await commentModel.find({ postId: postId, parentCommentId: { $ne: null }, isActive: true })
+//       .populate({
+//         path: 'userId',
+//         select: 'username avatar email'
+//       })
+//       .lean()
 
-    const replies = await commentModel.find({ postId: postId, parentCommentId: { $ne: null }, isActive: true })
-      .populate({
-        path: 'userId',
-        select: 'username avatar email'
-      })
-      .lean()
+//     const replyMap = {}
+//     replies.forEach(r => {
+//       if (!replyMap[r.parentCommentId]) replyMap[r.parentCommentId] = []
+//       replyMap[r.parentCommentId].push(r)
+//     })
 
-    const replyMap = {}
-    replies.forEach(r => {
-      if (!replyMap[r.parentCommentId]) replyMap[r.parentCommentId] = []
-      replyMap[r.parentCommentId].push(r)
-    })
+//     const likes = await likeModel.find({
+//       userId,
+//       targetType: 'comment',
+//       targetId: { $in: comments.map(c => c._id) }
+//     })
 
+//     const likedSet = new Set(likes.map(l => l.targetId.toString()))
+
+//     if (!userId) {
+//       result = parentComments.map(c => ({
+//         ...c,
+//         isLiked: false,
+//         replies: replyMap[c._id]?.map(r => ( { ...r, isLiked: false }) ) || []
+//       }))
+//       return result
+//     }
+
+//     result = parentComments.map(c => ({
+//       ...c,
+//       isLiked: likedSet.has(c._id.toString()),
+//       replies: replyMap[c._id]?.map(r => (
+//         {
+//           ...r,
+//           isLiked: likedSet.has(r._id.toString())
+//         }
+//       ) ) || []
+//     }))
+
+//     return result
+//   } catch (error) {
+//     throw error
+//   }
+// }
+
+///
+
+// const getCommentsByPost = async (postId, userId, reqQuery) => {
+//   const limit = Number(reqQuery.limit) || 5
+//   const cursor = reqQuery.cursor
+
+//   const query = {
+//     postId,
+//     parentCommentId: null,
+//     isActive: true
+//   }
+
+//   if (cursor) {
+//     const date = new Date(cursor)
+//     if (!isNaN(date.getTime())) {
+//       query.createdAt = { $lt: date }
+//     }
+//   }
+
+//   const parentComments = await commentModel.find(query)
+//     .populate('userId', 'username avatar email')
+//     .sort({ createdAt: -1 })
+//     .limit(limit)
+//     .lean()
+
+//   const parentIds = parentComments.map(c => c._id)
+
+//   const replies = await commentModel.find({
+//     parentCommentId: { $in: parentIds },
+//     isActive: true
+//   })
+//     .populate('userId', 'username avatar email')
+//     .lean()
+
+//   const replyMap = {}
+//   replies.forEach(r => {
+//     if (!replyMap[r.parentCommentId]) replyMap[r.parentCommentId] = []
+//     replyMap[r.parentCommentId].push(r)
+//   })
+
+//   let likedSet = new Set()
+//   if (userId) {
+//     const likes = await likeModel.find({
+//       userId,
+//       targetType: 'comment',
+//       targetId: { $in: [...parentIds, ...replies.map(r => r._id)] }
+//     })
+//     likedSet = new Set(likes.map(l => l.targetId.toString()))
+//   }
+
+//   const result = parentComments.map(c => ({
+//     ...c,
+//     isLiked: likedSet.has(c._id.toString()),
+//     replies: replyMap[c._id]?.map(r => ({
+//       ...r,
+//       isLiked: likedSet.has(r._id.toString())
+//     })) || []
+//   }))
+
+//   return {
+//     data: result,
+//     nextCursor: parentComments.length
+//       ? parentComments[parentComments.length - 1].createdAt
+//       : null
+//   }
+// }
+
+const getCommentsByPost = async (postId, userId, reqQuery) => {
+  const limit = Number(reqQuery.limit) || 5
+  const cursor = reqQuery.cursor
+
+  const query = {
+    postId,
+    parentCommentId: null,
+    isActive: true
+  }
+
+  if (cursor && mongoose.Types.ObjectId.isValid(cursor)) {
+    query._id = { $lt: new mongoose.Types.ObjectId(cursor) }
+  }
+
+  const parentComments = await commentModel.find(query)
+    .populate('userId', 'username avatar email')
+    .sort({ _id: -1 })
+    .limit(limit + 1)
+    .lean()
+
+  const parentIds = parentComments.map(c => c._id)
+
+  const replies = await commentModel.find({
+    parentCommentId: { $in: parentIds },
+    isActive: true
+  })
+    .populate('userId', 'username avatar email')
+    .lean()
+
+  const replyMap = {}
+  replies.forEach(r => {
+    if (!replyMap[r.parentCommentId]) replyMap[r.parentCommentId] = []
+    replyMap[r.parentCommentId].push(r)
+  })
+
+  let likedSet = new Set()
+  if (userId) {
+    const likeTargets = [...parentIds, ...replies.map(r => r._id)]
     const likes = await likeModel.find({
       userId,
       targetType: 'comment',
-      targetId: { $in: comments.map(c => c._id) }
+      targetId: { $in: likeTargets }
     })
+    likedSet = new Set(likes.map(l => l.targetId.toString()))
+  }
 
-    const likedSet = new Set(likes.map(l => l.targetId.toString()))
+  const result = parentComments.map(c => ({
+    ...c,
+    isLiked: likedSet.has(c._id.toString()),
+    replies: replyMap[c._id]?.map(r => ({
+      ...r,
+      isLiked: likedSet.has(r._id.toString())
+    })) || []
+  }))
 
-    if (!userId) {
-      result = parentComments.map(c => ({
-        ...c,
-        isLiked: false,
-        replies: replyMap[c._id]?.map(r => ( { ...r, isLiked: false }) ) || []
-      }))
-      return result
-    }
+  const hasMore = parentComments.length > limit
 
-    result = parentComments.map(c => ({
-      ...c,
-      isLiked: likedSet.has(c._id.toString()),
-      replies: replyMap[c._id]?.map(r => (
-        {
-          ...r,
-          isLiked: likedSet.has(r._id.toString())
-        }
-      ) ) || []
-    }))
+  if (hasMore) parentComments.pop()
 
-    return result
-  } catch (error) {
-    throw error
+  return {
+    data: result,
+    nextCursor: parentComments.length
+      ? parentComments[parentComments.length - 1]._id
+      : null,
+    hasMore
   }
 }
+
 
 const getComments = async (userId, reqQuery) => {
   try {

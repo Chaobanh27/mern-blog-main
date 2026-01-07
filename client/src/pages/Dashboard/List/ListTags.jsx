@@ -3,13 +3,16 @@ import TableItem from '~/components/Dashboard/TableItem'
 import { useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import { getTagsAPI } from '~/apis'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import Pagination from '~/components/Pagination'
 
 const ListTags = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [tags, setTags] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const currentPage = parseInt(searchParams.get('page')) || 1
   const [totalPages, setTotalPages] = useState(1)
+  const [totalTags, setTotalTags] = useState(0)
 
   const { register, watch } = useForm({
     defaultValues: {
@@ -22,31 +25,30 @@ const ListTags = () => {
   const search = watch('search')
   const sortField = watch('sortField')
   const sortOrder = watch('sortOrder')
-  // const indexOfLastPost = currentPage * 10
-  // const indexOfFirstPost = indexOfLastPost - 10
-  // const currentUsers = users.slice(indexOfFirstPost, indexOfLastPost)
 
   const debouncedSearch = useDebounce(search, 500)
 
+  const limit = 10
 
   useEffect(() => {
     const fetchData = async () => {
-      const [
-        tags
-      ] = await Promise.all([
-        getTagsAPI()
-      ])
-      setTags(tags)
-      // setTotalPages(posts.totalPages)
+      const res = await getTagsAPI(currentPage, limit)
+      setTags(res.data)
+      setTotalPages(res.totalPages)
+      setTotalTags(res.totalTags)
     }
 
     fetchData()
   }, [currentPage, debouncedSearch, sortField, sortOrder])
 
+  const changePage = (page) => {
+    setSearchParams({ page })
+  }
+
   return (
     <>
       <div className="p-4">
-        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Tags</h1>
+        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Tags <span className='text-blue'>{totalTags}</span></h1>
         {/* SEARCH + FILTER */}
         <div className="flex justify-between mb-4 mt-4 ">
           <input
@@ -61,44 +63,15 @@ const ListTags = () => {
           <Link to='/dashboard/add-tag' className='rounded p-2 bg-blue text-white'><Plus/></Link>
         </div>
 
-        {tags.length > 0 ? <TableItem data={tags} sortField={sortField} sortOrder={sortOrder} setData={setTags}/> :
-          <div className='dark:text-white w-full text-center font-bold uppercase'>
-            <p>no results found</p>
-          </div>
+        {
+          tags.length > 0 ? <TableItem data={tags} sortField={sortField} sortOrder={sortOrder} setData={setTags}/> :
+            <div className='dark:text-white w-full text-center font-bold uppercase'>
+              <p>no results found</p>
+            </div>
         }
 
         {/* PAGINATION */}
-        <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Prev
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 rounded-lg transition ${
-                currentPage === i + 1
-                  ? 'bg-blue text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-              onClick={() => setCurrentPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </button>
-        </section>
+        <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>
       </div>
     </>
   )

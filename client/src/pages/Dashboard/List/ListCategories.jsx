@@ -3,13 +3,18 @@ import TableItem from '~/components/Dashboard/TableItem'
 import { useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import { getCategoriesAPI } from '~/apis'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import Pagination from '~/components/Pagination'
 
 const ListCategories = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [categories, setCategories] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const currentPage = parseInt(searchParams.get('page')) || 1
   const [totalPages, setTotalPages] = useState(1)
+  const [totalCategories, setTotalCategories] = useState(0)
+
+  const limit = 10
 
   const { register, watch, setValue } = useForm({
     defaultValues: {
@@ -22,30 +27,29 @@ const ListCategories = () => {
   const search = watch('search')
   const sortField = watch('sortField')
   const sortOrder = watch('sortOrder')
-  // const indexOfLastPost = currentPage * 10
-  // const indexOfFirstPost = indexOfLastPost - 10
-  // const currentUsers = users.slice(indexOfFirstPost, indexOfLastPost)
 
   const debouncedSearch = useDebounce(search, 500)
 
 
   useEffect(() => {
     const fetchData = async () => {
-      const [
-        categories
-      ] = await Promise.all([
-        getCategoriesAPI()
-      ])
-      setCategories(categories)
+      const res = await getCategoriesAPI(currentPage, limit)
+      setCategories(res.data)
+      setTotalPages(res.totalPages)
+      setTotalCategories(res.totalCategories)
     }
 
     fetchData()
   }, [currentPage, debouncedSearch, sortField, sortOrder])
 
+  const changePage = (page) => {
+    setSearchParams({ page })
+  }
+
   return (
     <>
       <div className="p-4">
-        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Categories</h1>
+        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Categories <span className='text-blue'>{totalCategories}</span></h1>
         {/* SEARCH + FILTER */}
         <div className="flex justify-between mb-4 mt-4 ">
           <input
@@ -68,37 +72,8 @@ const ListCategories = () => {
         }
 
         {/* PAGINATION */}
-        <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Prev
-          </button>
+        <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>
 
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 rounded-lg transition ${
-                currentPage === i + 1
-                  ? 'bg-blue text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-              onClick={() => setCurrentPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </button>
-        </section>
       </div>
     </>
   )

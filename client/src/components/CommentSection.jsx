@@ -9,6 +9,8 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 
 const CommentSection = ({ postId }) => {
   const [comments, setComments] = useState([])
+  const [cursor, setCursor] = useState(null)
+  const [hasMore, setHasMore] = useState(true)
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
   const currentUser = useSelector(selectCurrentUser)
   /*
@@ -21,10 +23,14 @@ const CommentSection = ({ postId }) => {
     type: null
   })
 
+  const limit = 5
+
   useEffect(() => {
     const loadData = async () => {
-      const res = await getCommentsByPostAPI(postId)
-      setComments(res)
+      const res = await getCommentsByPostAPI(postId, limit, null )
+      setComments(res.data)
+      setCursor(res.nextCursor)
+      setHasMore(!!res.nextCursor)
     }
     loadData()
   }, [postId])
@@ -103,12 +109,20 @@ const CommentSection = ({ postId }) => {
     setComments(commentsFilter)
   }
 
+  const loadMore = async () => {
+    if (!cursor || !hasMore) return
+
+    const res = await getCommentsByPostAPI(postId, limit, cursor)
+
+    setComments(prev => [...prev, ...res.data])
+    setCursor(res.nextCursor)
+    setHasMore(res.hasMore)
+  }
 
   return (
     <section className="mt-12">
       <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Comments {comments.length}</h3>
 
-      {/* Comment form */}
       {
         currentUser ? <CommentInput
           register={register}
@@ -122,7 +136,6 @@ const CommentSection = ({ postId }) => {
       }
 
 
-      {/* Single comment (with replies) */}
       <div className="space-y-6">
         {
           comments.length > 0 && comments.map(comment => (
@@ -141,11 +154,17 @@ const CommentSection = ({ postId }) => {
         }
       </div>
 
-      {/* Load more */}
       <div className="mt-8 mb-8 text-center">
-        <button className="px-4 py-2 rounded-md cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+        {
+          hasMore && cursor && (
+            <button
+              onClick={loadMore}
+              className="interceptor-loading px-4 py-2 rounded-md cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
             Load more comments
-        </button>
+            </button>
+          )
+        }
+
       </div>
     </section>
   )

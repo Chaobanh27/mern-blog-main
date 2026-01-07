@@ -105,8 +105,8 @@ export const updateCommentAPI = async (commentId, data) => {
   return res.data
 }
 
-export const getCommentsByPostAPI = async (postId) => {
-  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/comments/by-post/${postId}`)
+export const getCommentsByPostAPI = async (postId, limit, cursor) => {
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/comments/by-post/${postId}?limit=${limit}&cursor=${cursor}`)
   return res.data
 }
 
@@ -125,8 +125,8 @@ export const createNewCategoryAPI = async (data) => {
   return res.data
 }
 
-export const getCategoriesAPI = async () => {
-  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/categories/`)
+export const getCategoriesAPI = async (currentPage, limit) => {
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/categories?page=${currentPage}&limit=${limit}`)
   return res.data
 }
 
@@ -135,8 +135,8 @@ export const createNewTagAPI = async (data) => {
   return res.data
 }
 
-export const getTagsAPI = async () => {
-  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/tags/`)
+export const getTagsAPI = async (currentPage, limit) => {
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/tags?page=${currentPage}&limit=${limit}`)
   return res.data
 }
 

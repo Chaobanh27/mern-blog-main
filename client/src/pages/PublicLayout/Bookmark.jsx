@@ -57,8 +57,8 @@ const Bookmark = () => {
         )
       ])
       setPosts(posts.posts)
-      setCategories(categories)
-      setTags(tags)
+      setCategories(categories.data)
+      setTags(tags.data)
     }
 
     fetchData()

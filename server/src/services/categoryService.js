@@ -28,10 +28,29 @@ const createNew = async (userId, reqBody) => {
   }
 }
 
-const getCategories = async () => {
+const getCategories = async (reqQuery) => {
   try {
-    const categories = await categoryModel.find()
-    return categories
+
+    const page = parseInt(reqQuery.page) || 1
+    const limit = parseInt(reqQuery.limit) || 10
+    const skip = (page - 1) * limit
+
+    const [categories, totalCategories] = await Promise.all([
+      categoryModel.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      categoryModel.countDocuments()
+    ])
+
+    const totalPages = Math.ceil(totalCategories / limit)
+
+    return {
+      data: categories,
+      totalCategories,
+      totalPages,
+      currentPage: page
+    }
   } catch (error) {
     throw error
   }

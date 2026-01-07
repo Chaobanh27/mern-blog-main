@@ -4,12 +4,15 @@ import { Controller, useForm } from 'react-hook-form'
 import { useDebounce } from '@uidotdev/usehooks'
 import Select from 'react-select'
 import { getCategoriesAPI, getPostsAPI, getTagsAPI } from '~/apis'
+import { useSearchParams } from 'react-router-dom'
+import Pagination from '~/components/Pagination'
 
 const ListBlogs = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const currentPage = parseInt(searchParams.get('page')) || 1
   const [totalPages, setTotalPages] = useState(1)
 
   const { register, watch, control } = useForm({
@@ -21,6 +24,8 @@ const ListBlogs = () => {
       sortOrder: 'desc'
     }
   })
+
+  const limit = 10
 
   const search = watch('search')
   const category = watch('category')
@@ -44,7 +49,7 @@ const ListBlogs = () => {
           {
             search: debouncedSearch,
             currentPage,
-            limit: 10,
+            limit: limit,
             category: category.value,
             tag: tag,
             sortBy: sortField,
@@ -60,6 +65,10 @@ const ListBlogs = () => {
 
     fetchData()
   }, [currentPage, debouncedSearch, category, tag, sortField, sortOrder])
+
+  const changePage = (page) => {
+    setSearchParams({ page })
+  }
 
   return (
     <>
@@ -122,37 +131,8 @@ const ListBlogs = () => {
         }
 
         {/* PAGINATION */}
-        <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-          >
-            Prev
-          </button>
+        <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>
 
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 rounded-lg transition ${
-                currentPage === i + 1
-                  ? 'bg-blue text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-              }`}
-              onClick={() => setCurrentPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-          >
-            Next
-          </button>
-        </section>
       </div>
     </>
   )

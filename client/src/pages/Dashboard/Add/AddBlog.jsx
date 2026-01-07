@@ -37,8 +37,8 @@ const AddBlog = () => {
       ])
 
       setDraftId(draftId)
-      setCategories(categories)
-      setTags(tags)
+      setCategories(categories.data)
+      setTags(tags.data)
     }
 
     fetchData()
