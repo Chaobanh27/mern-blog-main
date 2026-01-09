@@ -1,20 +1,21 @@
 import { useDebounce } from '@uidotdev/usehooks'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useSearchParams } from 'react-router-dom'
 import Select from 'react-select'
 import { getCategoriesAPI, getPostsAPI, getTagsAPI } from '~/apis'
+import Pagination from '~/components/Pagination'
 import PostPreview from '~/components/PostPreview'
 
 const SearchDetail = () => {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
-  const postsPerPage = 6
-  const totalPages = Math.ceil(posts.length / postsPerPage)
-  const indexOfLastPost = currentPage * postsPerPage
-  const indexOfFirstPost = indexOfLastPost - postsPerPage
-  const currentPosts = posts.length > 0 && posts?.slice(indexOfFirstPost, indexOfLastPost)
+  const currentPage = parseInt(searchParams.get('page')) || 1
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalPosts, setTotalPosts] = useState(0)
+
   const { register, control, watch } = useForm({
     defaultValues: {
       search: '',
@@ -33,6 +34,7 @@ const SearchDetail = () => {
 
 
   const debouncedSearch = useDebounce(search, 500)
+  const limit = 10
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +49,7 @@ const SearchDetail = () => {
           {
             search: debouncedSearch,
             currentPage,
-            limit: 10,
+            limit: limit,
             category: category.value,
             tag: tag,
             sortBy: sortField,
@@ -58,10 +60,17 @@ const SearchDetail = () => {
       setPosts(posts.posts)
       setCategories(categories.data)
       setTags(tags.data)
+      setTotalPages(posts.totalPages)
+      setTotalPosts(posts.totalPosts)
     }
 
     fetchData()
   }, [currentPage, debouncedSearch, category, tag, sortField, sortOrder])
+
+
+  const changePage = (page) => {
+    setSearchParams({ page })
+  }
 
   return (
     <div className="space-y-6 py-30 ">
@@ -122,8 +131,8 @@ const SearchDetail = () => {
       </section>
 
       {/* Search Results Grid */}
-      <section className={currentPosts.length > 0 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' : 'h-40'}>
-        {currentPosts.length > 0 ? currentPosts.map((post) => (
+      <section className={posts.length > 0 ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6' : 'h-40'}>
+        {posts.length > 0 ? posts.map((post) => (
           <div key={post._id}>
             <PostPreview post={post}/>
           </div>
@@ -134,38 +143,8 @@ const SearchDetail = () => {
         }
       </section>
 
-      {/* Pagination */}
-      <section className="flex justify-center items-center gap-2 mt-8 flex-wrap">
-        <button
-          className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
-        >
-            Prev
-        </button>
+      <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>
 
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i}
-            className={`px-3 py-1 rounded-lg transition ${
-              currentPage === i + 1
-                ? 'bg-blue text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-            onClick={() => setCurrentPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-        <button
-          className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-            Next
-        </button>
-      </section>
     </div>
   )
 }

@@ -16,7 +16,7 @@ const commentSchema = new Schema({
   content: {
     type: String,
     required: true,
-    minLength: [3, 'Comment should contain at least 3 characters!']
+    minLength: [1, 'Comment should contain at least 1 characters!']
   },
   parentCommentId: {
     type: mongoose.Schema.Types.ObjectId,

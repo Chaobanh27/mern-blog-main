@@ -11,7 +11,7 @@ const ListCategories = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [categories, setCategories] = useState([])
   const currentPage = parseInt(searchParams.get('page')) || 1
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
   const [totalCategories, setTotalCategories] = useState(0)
 
   const limit = 10

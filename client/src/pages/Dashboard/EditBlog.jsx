@@ -41,8 +41,8 @@ const EditBlog = () => {
       ])
       setDraftId(draftId)
       setPost(post)
-      setCategories(categories)
-      setTags(tags)
+      setCategories(categories.data)
+      setTags(tags.data)
     }
 
     fetchData()
@@ -171,17 +171,15 @@ const EditBlog = () => {
           />
         </label>
 
-        <label className=' dark:text-white' htmlFor='title'><p>Blog title</p></label>
-        <input {...register('title', { required: 'title is required' })} name='title' type="text" placeholder='Type here' required className='w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded dark:text-white'/>
+        <input {...register('title', { required: 'title is required' })} name='title' type="text" placeholder='Type here' required className='w-full max-w-lg mt-3 p-2 border border-gray-300 outline-none rounded dark:text-white'/>
         {errors.title && <span className='text-red-600'>{errors.title?.message}</span>}
 
-        <p className=' dark:text-white'>Blog Content</p>
-        <div className='h-screen'>
+        <div className='h-screen mt-3'>
           <DashboardEditor setContent={setContent} initialValue={post.content} content={content} draftId={draftId}/>
         </div>
 
         <div>
-          <button className='bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer'
+          <button className='bg-gray-300 mt-3 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded cursor-pointer'
             onClick={generateContent}>
             Generate Content With AI
           </button>
@@ -193,6 +191,7 @@ const EditBlog = () => {
           render={({ field }) => (
             <Select
               {...field}
+              className='mt-3'
               placeholder='category'
               closeMenuOnSelect={false}
               options={categoriesToOptions}
@@ -207,6 +206,7 @@ const EditBlog = () => {
           render={({ field }) => (
             <Select
               {...field}
+              className='mt-3'
               placeholder='tags'
               closeMenuOnSelect={false}
               isMulti
@@ -217,7 +217,7 @@ const EditBlog = () => {
         />
 
 
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer">
+        <button className="interceptor-loading bg-gray-300 mt-3 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center cursor-pointer">
           Submit
         </button>
 

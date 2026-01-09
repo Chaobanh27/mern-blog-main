@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { selectCurrentTheme } from '~/redux/theme/themeSlice'
 
 const schema = yup.object({
   content: yup
@@ -19,12 +20,14 @@ const CommentSection = ({ postId }) => {
   const [comments, setComments] = useState([])
   const [cursor, setCursor] = useState(null)
   const [hasMore, setHasMore] = useState(true)
+  const [totalComments, setTotalComments] = useState(true)
   const [showEmoji, setShowEmoji] = useState(false)
-  const [theme, setTheme] = useState('light')
+  // const [theme, setTheme] = useState('light')
   const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   })
   const currentUser = useSelector(selectCurrentUser)
+  const currentTheme = useSelector(selectCurrentTheme)
   /*
   state này phải nằm trong component cha chứ không được nằm trong component con nếu nằm
   trong component con thì mỗi comment sẽ có activeInput riêng mỗi trạng thái nếu như thế thì
@@ -44,6 +47,7 @@ const CommentSection = ({ postId }) => {
       setComments(res.data)
       setCursor(res.nextCursor)
       setHasMore(!!res.nextCursor)
+      setTotalComments(res.totalCommentsByPost)
     }
     loadData()
   }, [postId])
@@ -54,22 +58,22 @@ const CommentSection = ({ postId }) => {
   chứ không dùng redux toolkit và redux persist nên dùng tạm
   */
 
-  useEffect(() => {
-    const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark')
-      setTheme(isDark ? 'dark' : 'light')
-    }
+  // useEffect(() => {
+  //   const updateTheme = () => {
+  //     const isDark = document.documentElement.classList.contains('dark')
+  //     setTheme(isDark ? 'dark' : 'light')
+  //   }
 
-    updateTheme()
+  //   updateTheme()
 
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    })
+  //   const observer = new MutationObserver(updateTheme)
+  //   observer.observe(document.documentElement, {
+  //     attributes: true,
+  //     attributeFilter: ['class']
+  //   })
 
-    return () => observer.disconnect()
-  })
+  //   return () => observer.disconnect()
+  // })
 
   // useEffect(() => {
   //   const handleClickOutside = () => setShowEmoji(false)
@@ -89,6 +93,7 @@ const CommentSection = ({ postId }) => {
         reset()
         setShowEmoji(false)
         setComments( prevState => [res, ...prevState])
+        setTotalComments(prev => prev + 1)
       }
     })
   }
@@ -150,6 +155,7 @@ const CommentSection = ({ postId }) => {
     const arrCopy = [...comments]
     const commentsFilter = arrCopy.filter(val => val._id !== commentId)
     setComments(commentsFilter)
+    setTotalComments(prev => prev - 1)
   }
 
   const handleEmoji = (e) => {
@@ -169,9 +175,15 @@ const CommentSection = ({ postId }) => {
     setHasMore(res.hasMore)
   }
 
+  const emojiPickerTheme = () => {
+    if (currentTheme == 'light') return 'light'
+    else if (currentTheme == 'dark') return 'dark'
+    else return 'auto'
+  }
+
   return (
     <section className="mt-12">
-      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Comments {comments.length}</h3>
+      <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Comments {totalComments}</h3>
 
       {
         currentUser ? <CommentInput
@@ -182,7 +194,7 @@ const CommentSection = ({ postId }) => {
           onEmoji = {handleEmoji}
           setShowEmoji={setShowEmoji}
           showEmoji={showEmoji}
-          theme={theme}
+          theme={emojiPickerTheme()}
           errors={errors}
         /> :
           <div className='p-5 text-center font-bold uppercase'>

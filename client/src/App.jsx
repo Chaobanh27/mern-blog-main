@@ -15,7 +15,6 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import ForgotPassword from '~/pages/Auth/ForgotPassword'
 import ResetPassword from '~/pages/Auth/ResetPassword'
 import BlogDetail from '~/pages/PublicLayout/BlogDetail'
-import AuthorDetail from '~/pages/PublicLayout/AuthorDetail'
 import SearchDetail from '~/pages/PublicLayout/SearchDetail'
 import AboutUs from '~/pages/PublicLayout/AboutUs'
 import ListBlogs from '~/pages/Dashboard/List/ListBlogs'
@@ -27,7 +26,9 @@ import AddBlog from '~/pages/Dashboard/Add/AddBlog'
 import AddCategory from '~/pages/Dashboard/Add/AddCategory'
 import AddTag from '~/pages/Dashboard/Add/AddTag'
 import EditBlog from '~/pages/Dashboard/EditBlog'
-import Require2FA from './components/Require2FA'
+import Require2FA from '~/components/Require2FA'
+import ThemeApplier from '~/components/themeApplier'
+import Author from '~/pages/PublicLayout/Author'
 
 const ProtectedRoute = ({ user }) => {
   if (!user) return <Navigate to='/login' replace={true} />
@@ -44,13 +45,14 @@ const App = () => {
 
   return (
     <>
+      <ThemeApplier/>
       <Routes>
         {/* Public routes */}
         <Route path='/' element={<PublicLayout />}>
           <Route index element={<Home />} />
           <Route path='/' element={ <Navigate to='/home' replace={true} />}/>
           <Route path='/blog-detail/:postId' element={<BlogDetail/>} />
-          <Route path='/author-detail' element={<AuthorDetail/>} />
+          <Route path='/author/:userId' element={<Author/>} />
           <Route path='/search-detail' element={<SearchDetail/>} />
           <Route path='/bookmark' element={<Bookmark/>} />
           <Route path='/about-us' element={<AboutUs/>} />

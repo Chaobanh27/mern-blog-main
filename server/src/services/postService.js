@@ -246,7 +246,8 @@ const getPosts = async (reqQuery) => {
       filter.title = { $regex: search, $options: 'i' }
     }
 
-    const total = await postModel.countDocuments(filter)
+    const totalPosts = await postModel.countDocuments(filter)
+    const totalPages = Math.ceil(totalPosts / limit)
 
     const posts = await postModel
       .find(filter)
@@ -269,9 +270,9 @@ const getPosts = async (reqQuery) => {
       )
     return {
       posts,
-      totalPages: Math.ceil( total / limit),
+      totalPages,
       currentPage: currentPage,
-      total
+      totalPosts
     }
   } catch (error) {
     throw error

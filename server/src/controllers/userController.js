@@ -96,6 +96,16 @@ const getUser = async (req, res, next) => {
   }
 }
 
+const getAuthorDetail = async (req, res, next) => {
+  try {
+    const { userId } = req.params
+    const result = await userService.getAuthorDetail(userId, req.query)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getAllUsers = async (req, res, next) => {
   try {
     const userId = req.jwtDecoded._id
@@ -199,6 +209,7 @@ export const userController = {
   verifyAccount,
   login,
   getUser,
+  getAuthorDetail,
   getAllUsers,
   getAllRoles,
   logout,

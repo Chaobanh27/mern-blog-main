@@ -15,6 +15,7 @@ const BlogDetail = () => {
   const { postId } = useParams()
   const currentUser = useSelector(selectCurrentUser)
 
+  console.log(post);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +79,7 @@ const BlogDetail = () => {
                   {post.title}
                 </h1>
                 <div className="mt-3 text-sm text-gray-500 dark:text-gray-300 flex items-center gap-3">
-                  <Link to='/author-detail'><span>By <strong className="text-gray-700 dark:text-gray-100">{post.author?.username}</strong></span></Link>
+                  <Link to={'/author/' + post?.author?._id}><span>By <strong className="text-gray-700 dark:text-gray-100">{post.author?.username}</strong></span></Link>
                   <span>•</span>
                   <time dateTime="2025-09-01">{new Date(post.createdAt).toLocaleDateString()}</time>
                   <span>•</span>

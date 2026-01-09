@@ -8,6 +8,8 @@ import Select from 'react-select'
 import { createDraftAPI, createNewPostAPI, generateContentAPI, getCategoriesAPI, getTagsAPI, uploadMediaContentAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { marked } from 'marked'
+import { useSelector } from 'react-redux'
+import { selectCurrentTheme } from '~/redux/theme/themeSlice'
 
 const schema = yup.object({})
 
@@ -23,6 +25,8 @@ const AddBlog = () => {
   const { register, handleSubmit, getValues, control, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
   })
+
+  const currentTheme = useSelector(selectCurrentTheme)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -144,12 +148,42 @@ const AddBlog = () => {
               {...field}
               placeholder='category'
               className='mt-3'
-              closeMenuOnSelect={false}
+              closeMenuOnSelect={true}
+              menuPlacement='top'
               options={categories.map(c => ({
                 value: c._id,
                 label: c.name
               }))}
               onChange={val => field.onChange(val)}
+              styles={{
+                singleValue: base => ({
+                  ...base,
+                  color: currentTheme == 'dark' ? 'white' : 'black'
+                }),
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor: currentTheme == 'dark' ? '#364153' : 'white',
+                  borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    borderColor: '#3b82f6'
+                  }
+                }),
+                menu: base => ({
+                  ...base,
+                  zIndex: 50
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused
+                    ? '#e5e7eb'
+                    : state.isSelected
+                      ? '#3b82f6'
+                      : 'white',
+                  color: state.isSelected ? 'white' : '#111827',
+                  cursor: 'pointer'
+                })
+              }}
             />
           )}
         />
@@ -164,11 +198,41 @@ const AddBlog = () => {
               className='mt-3'
               closeMenuOnSelect={false}
               isMulti
+              menuPlacement='top'
               options={tags.map(c => ({
                 value: c._id,
                 label: c.name
               }))}
               onChange={val => field.onChange(val)}
+              styles={{
+                singleValue: base => ({
+                  ...base,
+                  color: currentTheme == 'dark' ? 'white' : 'black'
+                }),
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor: currentTheme == 'dark' ? '#364153' : 'white',
+                  borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    borderColor: '#3b82f6'
+                  }
+                }),
+                menu: base => ({
+                  ...base,
+                  zIndex: 50
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused
+                    ? '#e5e7eb'
+                    : state.isSelected
+                      ? '#3b82f6'
+                      : 'white',
+                  color: state.isSelected ? 'white' : '#111827',
+                  cursor: 'pointer'
+                })
+              }}
             />
           )}
         />

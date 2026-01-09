@@ -9,7 +9,7 @@ const ListUsers = () => {
   const [users, setUsers] = useState([])
   const [roles, setRoles] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
 
   const { register, watch, control } = useForm({
     defaultValues: {

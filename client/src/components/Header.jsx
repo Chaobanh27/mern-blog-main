@@ -2,14 +2,7 @@ import { Sparkles } from 'lucide-react'
 import SearchDropdown from './SearchDropDown'
 
 const Header = () => {
-  const data = [
-    'ReactJS',
-    'Tailwind CSS',
-    'NodeJS',
-    'MongoDB',
-    'Redux Toolkit',
-    'TanStack Query'
-  ]
+
   return (
     <>
       <header
@@ -20,16 +13,33 @@ const Header = () => {
           className='mx-8 sm:mx-16 xl:mx-24 relative pt-30 '>
           <div className='text-center mb-8'>
 
-            <div className='inline-flex border-2 border-purple-500 items-center justify-center gap-4 px-6 py-1.5 mb-4 rounded-full text-sm text-primary dark:text-white'>
-              <p>New: AI feature integrated</p>
+            <span
+              className="inline-flex items-center gap-1 rounded-md px-3 py-1
+                text-sm font-medium text-white
+                animate-[bgPulse_2.5s_ease-in-out_infinite]"
+              style={{
+                background:'linear-gradient(90deg, #7c3aed, #ec4899, #22d3ee)',
+                backgroundSize: '200% 200%'
+              }}
+            >
+              <style>
+                {`
+                  @keyframes bgPulse {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                  }
+                `}
+              </style>
+                    New: AI feature integrated
               <Sparkles/>
-            </div>
+            </span>
+
 
             <h1 className='text-3xl sm:text-6xl font-semibold sm:leading-16 text-gray-700 dark:text-white'>Your own <span className='text-primary'> blogging</span> <br/> platform.</h1>
 
             <p className='my-6 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500 dark:text-white'>This is your space to think out loud, to share what matters, and to write without filters. Whether it&apos;s one word or a thousand, your story starts right here.</p>
             <div className='flex justify-center'>
-              <SearchDropdown data={data}/>
+              <SearchDropdown />
             </div>
 
           </div>

@@ -10,7 +10,12 @@ export const registerUserAPI = async (data) => {
 }
 
 export const fetchUserAPI = async () => {
-  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/users/:id`)
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/users/`)
+  return res.data
+}
+
+export const fetchAuthorDetailAPI = async (userId, params) => {
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/users/${userId}`, { params })
   return res.data
 }
 
@@ -75,8 +80,8 @@ export const getPostsAPI = async (params) => {
   return res.data
 }
 
-export const getPostAPI = async (id) => {
-  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/posts/${id}`)
+export const getPostAPI = async (postId) => {
+  const res = await authorizedAxiosInstance.get(`${API_ROOT}/v1/posts/${postId}`)
   return res.data
 }
 

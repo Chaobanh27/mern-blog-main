@@ -2,7 +2,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { useEffect, useRef, useState } from 'react'
 import { searchAPI } from '~/apis'
 
-const SearchDropdown = ({ data = [] }) => {
+const SearchDropdown = () => {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [open, setOpen] = useState(false)
@@ -12,9 +12,10 @@ const SearchDropdown = ({ data = [] }) => {
 
   const containerRef = useRef(null)
 
-  const filteredData = data.filter(item =>
-    item.toLowerCase().includes(query.toLowerCase())
-  )
+  const sanitizeInput = value => {
+  // chỉ cho phép a-z A-Z 0-9
+    return value.replace(/[^a-zA-Z0-9]/g, '')
+  }
 
   const highlight = (text, keyword) => {
     if (!keyword) return text
@@ -54,20 +55,20 @@ const SearchDropdown = ({ data = [] }) => {
     case 'ArrowDown':
       e.preventDefault()
       setActiveIndex(prev =>
-        prev < filteredData.length - 1 ? prev + 1 : 0
+        prev < query.length - 1 ? prev + 1 : 0
       )
       break
 
     case 'ArrowUp':
       e.preventDefault()
       setActiveIndex(prev =>
-        prev > 0 ? prev - 1 : filteredData.length - 1
+        prev > 0 ? prev - 1 : query.length - 1
       )
       break
 
     case 'Enter':
       if (activeIndex >= 0) {
-        setQuery(filteredData[activeIndex])
+        setQuery(query[activeIndex])
         setOpen(false)
         setActiveIndex(-1)
       }
@@ -95,7 +96,10 @@ const SearchDropdown = ({ data = [] }) => {
     <div ref={containerRef} className="relative w-96">
       <input
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={e => {
+          const value = sanitizeInput(e.target.value)
+          setQuery(value)
+        }}
         onFocus={() => query && setOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder="Search post or author..."

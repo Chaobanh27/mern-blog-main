@@ -11,7 +11,7 @@ const ListTags = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [tags, setTags] = useState([])
   const currentPage = parseInt(searchParams.get('page')) || 1
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
   const [totalTags, setTotalTags] = useState(0)
 
   const { register, watch } = useForm({

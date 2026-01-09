@@ -277,6 +277,8 @@ const getCommentsByPost = async (postId, userId, reqQuery) => {
     query._id = { $lt: new mongoose.Types.ObjectId(cursor) }
   }
 
+  const totalCommentsByPost = await commentModel.countDocuments({ postId: postId, isActive: true })
+
   const parentComments = await commentModel.find(query)
     .populate('userId', 'username avatar email')
     .sort({ _id: -1 })
@@ -309,6 +311,10 @@ const getCommentsByPost = async (postId, userId, reqQuery) => {
     likedSet = new Set(likes.map(l => l.targetId.toString()))
   }
 
+  const hasMore = parentComments.length > limit
+
+  if (hasMore) parentComments.pop()
+
   const result = parentComments.map(c => ({
     ...c,
     isLiked: likedSet.has(c._id.toString()),
@@ -318,16 +324,13 @@ const getCommentsByPost = async (postId, userId, reqQuery) => {
     })) || []
   }))
 
-  const hasMore = parentComments.length > limit
-
-  if (hasMore) parentComments.pop()
-
   return {
     data: result,
-    nextCursor: parentComments.length
+    nextCursor: hasMore
       ? parentComments[parentComments.length - 1]._id
       : null,
-    hasMore
+    hasMore,
+    totalCommentsByPost: totalCommentsByPost
   }
 }
 

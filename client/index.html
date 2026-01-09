@@ -8,16 +8,27 @@
   </head>
   <body>
     <div id="root"></div>
-        <script>
-      //Đặt theme trực tiếp vào <html> trước khi React chạy để khi browser render lần đầu, nó đã biết là light hay dark → không bị flash nữa.
-        const theme = localStorage.getItem("theme");
-        if (theme === "dark" || 
-          (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
+    <script>
+      (function () {
+        try {
+          const theme = localStorage.getItem('persist:root')
+          if (!theme) return
+
+          const parsed = JSON.parse(theme)
+          const ui = JSON.parse(parsed.theme)
+          const themeValue = ui.theme
+
+          const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+          if (themeValue === 'dark' || (themeValue === 'system' && systemDark)) {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.add('light')
+          }
+        } catch (e) {}
+      })()
     </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

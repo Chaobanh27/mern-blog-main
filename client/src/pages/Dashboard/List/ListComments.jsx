@@ -10,8 +10,8 @@ const ListComments = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [comments, setComments] = useState([])
   const currentPage = parseInt(searchParams.get('page')) || 1
-  const [totalPages, setTotalPages] = useState(1)
-
+  const [totalPages, setTotalPages] = useState(0)
+  const [loaded, setLoaded] = useState(false)
 
   const limit = 10
 
@@ -30,14 +30,25 @@ const ListComments = () => {
   const debouncedSearch = useDebounce(search, 500)
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await getCommentsAPI(currentPage, limit)
-      setComments(res.data)
-      setTotalPages(res.totalPages)
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const res = await getCommentsAPI(currentPage, limit)
+  //     setComments(res.data)
+  //     setTotalPages(res.totalPages)
+  //   }
 
-    fetchData()
+  //   fetchData()
+  // }, [currentPage, debouncedSearch, sortField, sortOrder])
+
+  useEffect(() => {
+    getCommentsAPI(currentPage, limit)
+      .then(res => {
+        setComments(res.data)
+        setTotalPages(res.totalPages)
+      })
+      .finally(() => setLoaded(true))
+
+
   }, [currentPage, debouncedSearch, sortField, sortOrder])
 
   const changePage = (page) => {
@@ -61,10 +72,7 @@ const ListComments = () => {
           />
         </div>
 
-        {comments.length > 0 ? <TableItem data={comments} sortField={sortField} sortOrder={sortOrder} setData={setComments}/> :
-          <div className='dark:text-white w-full text-center font-bold uppercase'>
-            <p>no results found</p>
-          </div>}
+        <TableItem loaded={loaded} data={comments} sortField={sortField} sortOrder={sortOrder} setData={setComments}/>
 
         {/* PAGINATION */}
         <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>

@@ -18,6 +18,7 @@ import { SERVICE_NAME } from '~/utils/constants'
 import crypto from 'crypto'
 import mongoose from 'mongoose'
 import roleModel from '~/models/roleModel'
+import postModel from '~/models/postModel'
 
 const refreshToken = async (clientRefreshToken) => {
   try {
@@ -240,6 +241,98 @@ const getUser = async (userId, reqHeader) => {
     resUser['lastLogin'] = currentUserSession ? currentUserSession.lastLogin : null
 
     return pickUser(existUser)
+  } catch (error) {
+    throw (error)
+  }
+}
+
+const getAuthorDetail = async (userId, reqQuery) => {
+  try {
+
+    const currentPage = parseInt(reqQuery.currentPage) || 1
+    const limit = parseInt(reqQuery.limit) || 10
+    const skip = (currentPage - 1) * limit
+
+    const search = reqQuery.search || ''
+    const category = reqQuery.category || ''
+    const tag = reqQuery.tag || []
+    const sortBy = reqQuery.sortBy || 'createdAt'
+    const order = reqQuery.order === 'asc' ? 1 : -1
+
+    const tagsArr = []
+
+    if (tag?.length > 0) {
+      tag.forEach(element => {
+        const objId = new mongoose.Types.ObjectId(element.value)
+        tagsArr.push(objId)
+      })
+    }
+
+
+    const filter = {
+      author: userId,
+      isActive: true
+    }
+
+    if (category) {
+      filter.category = new mongoose.Types.ObjectId(category)
+    }
+
+    if (tagsArr?.length > 0) {
+      filter.tags = { $all: tagsArr }
+    }
+
+    if (search) {
+      filter.title = { $regex: search, $options: 'i' }
+    }
+
+    const sortOption = {
+      [sortBy]: order === 'asc' ? 1 : -1
+    }
+
+    const [author, posts, totalPosts] = await Promise.all([
+      userModel.findById(userId).select('-password'),
+      postModel.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limit)
+        .populate(
+          [
+            {
+              path: 'author',
+              select: 'username avatar email'
+            },
+            {
+              path: 'category'
+            },
+            {
+              path: 'tags'
+            }
+          ]
+        )
+        .lean(),
+      postModel.countDocuments({ author: userId })
+    ])
+
+    if (!author) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Author not found!')
+    }
+
+    const totalPages = Math.ceil(totalPosts / limit)
+
+    const result = {
+      author: author,
+      data : {
+        posts,
+        currentPage,
+        limit,
+        totalPosts,
+        totalPages
+      }
+    }
+
+    return result
+
   } catch (error) {
     throw (error)
   }
@@ -536,6 +629,7 @@ export const userService = {
   verifyAccount,
   login,
   getUser,
+  getAuthorDetail,
   getAllUsers,
   getAllRoles,
   logout,

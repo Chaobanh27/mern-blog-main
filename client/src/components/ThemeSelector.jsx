@@ -1,23 +1,10 @@
-import { useEffect, useState } from 'react'
 import { Sun, Moon, Monitor } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectCurrentTheme, setTheme } from '~/redux/theme/themeSlice'
 
 const ThemeSelector = () => {
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system')
-
-  useEffect(() => {
-    const root = window.document.documentElement
-    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'dark' || (theme === 'system' && systemDark)) {
-      root.classList.add('dark')
-    } else {
-      root.classList.add('light')
-    }
-
-    localStorage.setItem('theme', theme)
-  }, [theme])
+  const dispatch = useDispatch()
+  const theme = useSelector(selectCurrentTheme)
 
   const options = [
     { value: 'light', label: 'Light', icon: <Sun className="w-4 h-4 text-yellow-500" /> },
@@ -29,7 +16,7 @@ const ThemeSelector = () => {
     <div className="relative inline-block w-40">
       <select
         value={theme}
-        onChange={(e) => setTheme(e.target.value)}
+        onChange={(e) => dispatch(setTheme(e.target.value))}
         className="
           w-full appearance-none rounded-2xl border border-gray-300 dark:border-gray-600
           bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100
@@ -45,7 +32,6 @@ const ThemeSelector = () => {
         ))}
       </select>
 
-      {/* Icon hiển thị bên phải */}
       <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
         {options.find((opt) => opt.value === theme)?.icon}
       </div>

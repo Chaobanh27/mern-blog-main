@@ -94,6 +94,10 @@ Router.route('')
     userController.getAllUsers
   )
 
-Router.route('/:id')
+Router.route('/')
   .get(authMiddleware.isAuthorized, userController.getUser)
+
+Router.route('/:userId')
+  .get(userController.getAuthorDetail)
+
 export const userRoute = Router

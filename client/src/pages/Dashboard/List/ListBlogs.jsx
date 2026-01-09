@@ -13,7 +13,8 @@ const ListBlogs = () => {
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
   const currentPage = parseInt(searchParams.get('page')) || 1
-  const [totalPages, setTotalPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalPosts, setTotalPosts] = useState(0)
 
   const { register, watch, control } = useForm({
     defaultValues: {
@@ -38,11 +39,7 @@ const ListBlogs = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [
-        categories,
-        tags,
-        posts
-      ] = await Promise.all([
+      const [categories, tags, posts] = await Promise.all([
         getCategoriesAPI(),
         getTagsAPI(),
         getPostsAPI(
@@ -57,10 +54,11 @@ const ListBlogs = () => {
           }
         )
       ])
-      setPosts(posts.posts)
       setCategories(categories.data)
       setTags(tags.data)
+      setPosts(posts.posts)
       setTotalPages(posts.totalPages)
+      setTotalPosts(posts.totalPosts)
     }
 
     fetchData()
@@ -73,7 +71,7 @@ const ListBlogs = () => {
   return (
     <>
       <div className="p-4">
-        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Posts</h1>
+        <h1 className="text-gray-900 dark:text-white mt-5 font-bold">All Posts <span className='text-blue'>{totalPosts}</span></h1>
         {/* SEARCH + FILTER */}
         <div className="flex justify-between mb-4 mt-4 ">
           <input
@@ -124,11 +122,7 @@ const ListBlogs = () => {
           </div>
         </div>
 
-        {posts.length > 0 ? <TableItem data={posts} sortField={sortField} sortOrder={sortOrder} setData={setPosts}/> :
-          <div className='dark:text-white w-full text-center font-bold uppercase'>
-            <p>no results found</p>
-          </div>
-        }
+        <TableItem data={posts} sortField={sortField} sortOrder={sortOrder} setData={setPosts}/>
 
         {/* PAGINATION */}
         <Pagination currentPage={currentPage} totalPages={totalPages} changePage={changePage}/>

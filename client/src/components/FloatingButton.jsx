@@ -1,7 +1,11 @@
 import { Home, ArrowUp, BatteryIcon } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import useBattery from '~/hooks/useBattery'
 
 const FloatingButton = () => {
+  const { level, charging } = useBattery()
+
+  if (level === null) return null
   return (
   // <!-- component -->
     <div className = "group fixed bottom-0 right-0 p-2  flex items-end justify-end w-24 h-24 ">
@@ -13,18 +17,16 @@ const FloatingButton = () => {
         </svg>
       </div>
       {/* <!-- sub left --> */}
-      <div className="absolute rounded-full transition-all duration-[0.2s] ease-out scale-y-0 group-hover:scale-y-100 group-hover:-translate-x-16   flex  p-2 hover:p-3 bg-green-300 scale-100 hover:bg-green-400 text-white">
-        <Link to='/'>
-          <Home/>
-        </Link>
-      </div>
+      <Link to='/' className="absolute rounded-full transition-all duration-[0.2s] ease-out scale-y-0 group-hover:scale-y-100 group-hover:-translate-x-16   flex  p-2 hover:p-3 bg-green-300 scale-100 hover:bg-green-400 text-white">
+        <Home/>
+      </Link>
       {/* <!-- sub top --> */}
       <div className="absolute rounded-full transition-all duration-[0.2s] ease-out scale-x-0 group-hover:scale-x-100 group-hover:-translate-y-16  flex  p-2 hover:p-3 bg-blue-300 hover:bg-blue-400  text-white">
         <ArrowUp/>
       </div>
       {/* <!-- sub middle --> */}
       <div className="absolute rounded-full transition-all duration-[0.2s] ease-out scale-x-0 group-hover:scale-x-100 group-hover:-translate-y-14 group-hover:-translate-x-14   flex  p-2 hover:p-3 bg-yellow-300 hover:bg-yellow-400 text-white">
-        <BatteryIcon/>
+        <BatteryIcon className='fill-green-400'/> <span className='ml-0.5 text-gray-600 font-bold'>{level}%</span>
       </div>
     </div>
   )
